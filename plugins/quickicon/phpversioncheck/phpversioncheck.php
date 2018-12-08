@@ -3,7 +3,7 @@
  * @package     Joomla.Plugin
  * @subpackage  Quickicon.phpversioncheck
  *
- * @copyright   Copyright (C) 2005 - 2016 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2018 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
 /**
  * Plugin to check the PHP version and display a warning about its support status
  *
- * @since  __DEPLOY_VERSION__
+ * @since  3.7.0
  */
 class PlgQuickiconPhpVersionCheck extends JPlugin
 {
@@ -20,7 +20,7 @@ class PlgQuickiconPhpVersionCheck extends JPlugin
 	 * Constant representing the active PHP version being fully supported
 	 *
 	 * @var    integer
-	 * @since  __DEPLOY_VERSION__
+	 * @since  3.7.0
 	 */
 	const PHP_SUPPORTED = 0;
 
@@ -28,7 +28,7 @@ class PlgQuickiconPhpVersionCheck extends JPlugin
 	 * Constant representing the active PHP version receiving security support only
 	 *
 	 * @var    integer
-	 * @since  __DEPLOY_VERSION__
+	 * @since  3.7.0
 	 */
 	const PHP_SECURITY_ONLY = 1;
 
@@ -36,7 +36,7 @@ class PlgQuickiconPhpVersionCheck extends JPlugin
 	 * Constant representing the active PHP version being unsupported
 	 *
 	 * @var    integer
-	 * @since  __DEPLOY_VERSION__
+	 * @since  3.7.0
 	 */
 	const PHP_UNSUPPORTED = 2;
 
@@ -44,7 +44,7 @@ class PlgQuickiconPhpVersionCheck extends JPlugin
 	 * Application object.
 	 *
 	 * @var    JApplicationCms
-	 * @since  __DEPLOY_VERSION__
+	 * @since  3.7.0
 	 */
 	protected $app;
 
@@ -52,7 +52,7 @@ class PlgQuickiconPhpVersionCheck extends JPlugin
 	 * Load plugin language files automatically
 	 *
 	 * @var    boolean
-	 * @since  __DEPLOY_VERSION__
+	 * @since  3.7.0
 	 */
 	protected $autoloadLanguage = true;
 
@@ -63,7 +63,7 @@ class PlgQuickiconPhpVersionCheck extends JPlugin
 	 *
 	 * @return  void
 	 *
-	 * @since   __DEPLOY_VERSION__
+	 * @since   3.7.0
 	 */
 	public function onGetIcons($context)
 	{
@@ -97,10 +97,10 @@ class PlgQuickiconPhpVersionCheck extends JPlugin
 	 *
 	 * @return  array  Array of PHP support data
 	 *
-	 * @since   __DEPLOY_VERSION__
+	 * @since   3.7.0
 	 * @note    The dates used in this method should correspond to the dates given on PHP.net
-	 * @see     https://secure.php.net/supported-versions.php
-	 * @see     https://secure.php.net/eol.php
+	 * @link    https://secure.php.net/supported-versions.php
+	 * @link    https://secure.php.net/eol.php
 	 */
 	private function getPhpSupport()
 	{
@@ -115,19 +115,27 @@ class PlgQuickiconPhpVersionCheck extends JPlugin
 			),
 			'5.5' => array(
 				'security' => '2015-07-10',
-				'eos'      => '2016-07-21'
+				'eos'      => '2016-07-21',
 			),
 			'5.6' => array(
-				'security' => '2016-12-31',
-				'eos'      => '2018-12-31'
+				'security' => '2017-01-19',
+				'eos'      => '2018-12-31',
 			),
 			'7.0' => array(
 				'security' => '2017-12-03',
-				'eos'      => '2018-12-03'
+				'eos'      => '2018-12-03',
 			),
 			'7.1' => array(
 				'security' => '2018-12-01',
-				'eos'      => '2019-12-01'
+				'eos'      => '2019-12-01',
+			),
+			'7.2' => array(
+				'security' => '2019-11-30',
+				'eos'      => '2020-11-30',
+			),
+			'7.3' => array(
+				'security' => '2020-12-06',
+				'eos'      => '2021-12-06',
 			),
 		);
 
@@ -175,10 +183,11 @@ class PlgQuickiconPhpVersionCheck extends JPlugin
 				);
 			}
 
-			// If the version is still supported, check if it has reached security support only
-			$phpSecurityOnlyDate = new JDate($phpSupportData[$activePhpVersion]['security']);
+			// If the version is still supported, check if it has reached eol minus 3 month
+			$securityWarningDate = clone $phpEndOfSupport;
+			$securityWarningDate->sub(new DateInterval('P3M'));
 
-			if (!$phpNotSupported && $today > $phpSecurityOnlyDate)
+			if (!$phpNotSupported && $today > $securityWarningDate)
 			{
 				$supportStatus['status']  = self::PHP_SECURITY_ONLY;
 				$supportStatus['message'] = JText::sprintf(
@@ -195,12 +204,12 @@ class PlgQuickiconPhpVersionCheck extends JPlugin
 	 *
 	 * @return  boolean
 	 *
-	 * @since   __DEPLOY_VERSION__
+	 * @since   3.7.0
 	 */
 	private function shouldDisplayMessage()
 	{
 		// Only on admin app
-		if (!$this->app->isAdmin())
+		if (!$this->app->isClient('administrator'))
 		{
 			return false;
 		}
@@ -224,7 +233,7 @@ class PlgQuickiconPhpVersionCheck extends JPlugin
 		}
 
 		// Only to com_cpanel
-		if ($this->app->input->get('option') != 'com_cpanel')
+		if ($this->app->input->get('option') !== 'com_cpanel')
 		{
 			return false;
 		}

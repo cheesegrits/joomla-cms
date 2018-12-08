@@ -3,8 +3,8 @@
  * @package     Joomla.UnitTest
  * @subpackage  Twitter
  *
- * @copyright   Copyright (C) 2005 - 2016 Open Source Matters, Inc. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE
+ * @copyright   Copyright (C) 2005 - 2018 Open Source Matters, Inc. All rights reserved.
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 /**
@@ -13,61 +13,61 @@
  * @package     Joomla.UnitTest
  * @subpackage  Twitter
  *
- * @since       12.3
+ * @since       3.1.4
  */
 class JTwitterDirectmessagesTest extends TestCase
 {
 	/**
 	 * @var    JRegistry  Options for the Twitter object.
-	 * @since  12.3
+	 * @since  3.1.4
 	 */
 	protected $options;
 
 	/**
 	 * @var    JHttp  Mock client object.
-	 * @since  12.3
+	 * @since  3.1.4
 	 */
 	protected $client;
 
 	/**
 	 * @var    JInput The input object to use in retrieving GET/POST data.
-	 * @since  12.3
+	 * @since  3.1.4
 	 */
 	protected $input;
 
 	/**
 	 * @var    JTwitterDirectMessages  Object under test.
-	 * @since  12.3
+	 * @since  3.1.4
 	 */
 	protected $object;
 
 	/**
 	 * @var    JTwitterOauth  Authentication object for the Twitter object.
-	 * @since  12.3
+	 * @since  3.1.4
 	 */
 	protected $oauth;
 
 	/**
 	 * @var    string  Sample JSON string.
-	 * @since  12.3
+	 * @since  3.1.4
 	 */
 	protected $sampleString = '{"a":1,"b":2,"c":3,"d":4,"e":5}';
 
 	/**
 	 * @var    string  Sample JSON error message.
-	 * @since  12.3
+	 * @since  3.1.4
 	 */
 	protected $errorString = '{"error":"Generic error"}';
 
 	/**
 	 * @var    string  Sample JSON Twitter error message.
-	 * @since  12.3
+	 * @since  3.1.4
 	 */
 	protected $twitterErrorString = '{"errors":[{"message":"Sorry, that page does not exist","code":34}]}';
 
 	/**
 	 * @var    string  Sample JSON string.
-	 * @since  12.3
+	 * @since  3.1.4
 	 */
 	protected $rateLimit = '{"resources": {"direct_messages": {
 			"/direct_messages": {"remaining":15, "reset":"Mon Jun 25 17:20:53 +0000 2012"},
@@ -107,7 +107,7 @@ class JTwitterDirectmessagesTest extends TestCase
 
 		$this->options = new JRegistry;
 		$this->input = new JInput;
-		$this->client = $this->getMock('JHttp', array('get', 'post', 'delete', 'put'));
+		$this->client = $this->getMockBuilder('JHttp')->setMethods(array('get', 'post', 'delete', 'put'))->getMock();
 		$this->oauth = new JTwitterOAuth($this->options, $this->client, $this->input);
 		$this->oauth->setToken($access_token);
 
@@ -125,18 +125,13 @@ class JTwitterDirectmessagesTest extends TestCase
 	 *
 	 * @return void
 	 *
-	 * @see     PHPUnit_Framework_TestCase::tearDown()
+	 * @see     \PHPUnit\Framework\TestCase::tearDown()
 	 * @since   3.6
 	 */
 	protected function tearDown()
 	{
 		$_SERVER = $this->backupServer;
-		unset($this->backupServer);
-		unset($this->options);
-		unset($this->input);
-		unset($this->client);
-		unset($this->oauth);
-		unset($this->object);
+		unset($this->backupServer, $this->options, $this->input, $this->client, $this->oauth, $this->object);
 	}
 
 	/**
@@ -144,7 +139,7 @@ class JTwitterDirectmessagesTest extends TestCase
 	 *
 	 * @return  void
 	 *
-	 * @since   12.3
+	 * @since   3.1.4
 	 */
 	public function testGetDirectMessages()
 	{
@@ -195,14 +190,13 @@ class JTwitterDirectmessagesTest extends TestCase
 	 * @return  void
 	 *
 	 * @expectedException DomainException
-	 * @since   12.3
+	 * @since   3.1.4
 	 */
 	public function testGetDirectMessagesFailure()
 	{
 		$since_id = 12345;
 		$max_id = 54321;
 		$count = 10;
-		$page = 1;
 		$entities = true;
 
 		$returnData = new stdClass;
@@ -241,7 +235,7 @@ class JTwitterDirectmessagesTest extends TestCase
 	 *
 	 * @return  void
 	 *
-	 * @since   12.3
+	 * @since   3.1.4
 	 */
 	public function testGetSentDirectMessages()
 	{
@@ -292,7 +286,7 @@ class JTwitterDirectmessagesTest extends TestCase
 	 * @return  void
 	 *
 	 * @expectedException DomainException
-	 * @since   12.3
+	 * @since   3.1.4
 	 */
 	public function testGetSentDirectMessagesFailure()
 	{
@@ -339,7 +333,7 @@ class JTwitterDirectmessagesTest extends TestCase
 	*
 	* @return array
 	*
-	* @since 12.3
+	* @since 3.1.4
 	*/
 	public function seedUser()
 	{
@@ -359,7 +353,7 @@ class JTwitterDirectmessagesTest extends TestCase
 	 * @return  void
 	 *
 	 * @dataProvider  seedUser
-	 * @since   12.3
+	 * @since   3.1.4
 	 */
 	public function testSendDirectMessages($user)
 	{
@@ -407,7 +401,7 @@ class JTwitterDirectmessagesTest extends TestCase
 	 *
 	 * @dataProvider  seedUser
 	 * @expectedException DomainException
-	 * @since   12.3
+	 * @since   3.1.4
 	 */
 	public function testSendDirectMessagesFailure($user)
 	{
@@ -448,7 +442,7 @@ class JTwitterDirectmessagesTest extends TestCase
 	 *
 	 * @return  void
 	 *
-	 * @since   12.3
+	 * @since   3.1.4
 	 */
 	public function testGetDirectMessagesById()
 	{
@@ -490,7 +484,7 @@ class JTwitterDirectmessagesTest extends TestCase
 	 * @return  void
 	 *
 	 * @expectedException DomainException
-	 * @since   12.3
+	 * @since   3.1.4
 	 */
 	public function testGetDirectMessagesByIdFailure()
 	{
@@ -528,7 +522,7 @@ class JTwitterDirectmessagesTest extends TestCase
 	 *
 	 * @return  void
 	 *
-	 * @since   12.3
+	 * @since   3.1.4
 	 */
 	public function testDeleteDirectMessages()
 	{
@@ -562,7 +556,7 @@ class JTwitterDirectmessagesTest extends TestCase
 	 * @return  void
 	 *
 	 * @expectedException DomainException
-	 * @since   12.3
+	 * @since   3.1.4
 	 */
 	public function testDeleteDirectMessagesFailure()
 	{

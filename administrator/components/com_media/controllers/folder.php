@@ -3,7 +3,7 @@
  * @package     Joomla.Administrator
  * @subpackage  com_media
  *
- * @copyright   Copyright (C) 2005 - 2016 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2018 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -28,7 +28,7 @@ class MediaControllerFolder extends JControllerLegacy
 	 */
 	public function delete()
 	{
-		JSession::checkToken('request') or jexit(JText::_('JINVALID_TOKEN'));
+		$this->checkToken('request');
 
 		$user = JFactory::getUser();
 
@@ -155,7 +155,7 @@ class MediaControllerFolder extends JControllerLegacy
 	public function create()
 	{
 		// Check for request forgeries
-		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+		$this->checkToken();
 
 		$user  = JFactory::getUser();
 
@@ -209,7 +209,7 @@ class MediaControllerFolder extends JControllerLegacy
 				if (JFolder::create($object_file->filepath))
 				{
 					$data = "<html>\n<body bgcolor=\"#FFFFFF\">\n</body>\n</html>";
-					JFile::write($object_file->filepath . "/index.html", $data);
+					JFile::write($object_file->filepath . '/index.html', $data);
 
 					// Trigger the onContentAfterSave event.
 					$dispatcher->trigger('onContentAfterSave', array('com_media.folder', &$object_file, true));

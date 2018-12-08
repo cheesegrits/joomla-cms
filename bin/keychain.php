@@ -3,18 +3,12 @@
 /**
  * @package    Joomla.Platform
  *
- * @copyright  Copyright (C) 2005 - 2016 Open Source Matters, Inc. All rights reserved.
- * @license    GNU General Public License version 2 or later; see LICENSE
+ * @copyright  Copyright (C) 2005 - 2018 Open Source Matters, Inc. All rights reserved.
+ * @license    GNU General Public License version 2 or later; see LICENSE.txt
  *
  */
 
 // @deprecated  4.0  Deprecated without replacement
-
-// Make sure we're being called from the command line, not a web interface
-if (PHP_SAPI !== 'cli')
-{
-	die('This is a command line only application.');
-}
 
 // We are a valid entry point.
 define('_JEXEC', 1);
@@ -47,31 +41,22 @@ $config = new JConfig;
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Load Library language
-$lang = JFactory::getLanguage();
-
-// Try the finder_cli file in the current language (without allowing the loading of the file in the default language)
-$lang->load('finder_cli', JPATH_SITE, null, false, false)
-
-// Fallback to the finder_cli file in the default language
-|| $lang->load('finder_cli', JPATH_SITE, null, true);
-
 /**
  * Keychain Manager.
  *
- * @since  12.3
+ * @since  3.1.4
  */
 class KeychainManager extends JApplicationCli
 {
 	/**
 	 * @var    boolean  A flag if the keychain has been updated to trigger saving the keychain
-	 * @since  12.3
+	 * @since  3.1.4
 	 */
 	protected $updated = false;
 
 	/**
 	 * @var    JKeychain  The keychain object being manipulated.
-	 * @since  12.3
+	 * @since  3.1.4
 	 */
 	protected $keychain = null;
 
@@ -80,7 +65,7 @@ class KeychainManager extends JApplicationCli
 	 *
 	 * @return  void
 	 *
-	 * @since   12.3
+	 * @since   3.1.4
 	 */
 	public function execute( )
 	{
@@ -146,7 +131,7 @@ class KeychainManager extends JApplicationCli
 	 *
 	 * @return  void
 	 *
-	 * @since   12.3
+	 * @since   3.1.4
 	 */
 	protected function loadKeychain()
 	{
@@ -175,7 +160,7 @@ class KeychainManager extends JApplicationCli
 	 *
 	 * @return  void
 	 *
-	 * @since   12.3
+	 * @since   3.1.4
 	 */
 	protected function saveKeychain()
 	{
@@ -197,7 +182,7 @@ class KeychainManager extends JApplicationCli
 	 *
 	 * @return  void
 	 *
-	 * @since   12.3
+	 * @since   3.1.4
 	 */
 	protected function initPassphraseFile()
 	{
@@ -232,7 +217,7 @@ class KeychainManager extends JApplicationCli
 	 *
 	 * @return  void
 	 *
-	 * @since   12.3
+	 * @since   3.1.4
 	 */
 	protected function create()
 	{
@@ -256,7 +241,7 @@ class KeychainManager extends JApplicationCli
 	 *
 	 * @return  void
 	 *
-	 * @since   12.3
+	 * @since   3.1.4
 	 */
 	protected function change()
 	{
@@ -275,7 +260,7 @@ class KeychainManager extends JApplicationCli
 	 *
 	 * @return  void
 	 *
-	 * @since   12.3
+	 * @since   3.1.4
 	 */
 	protected function read()
 	{
@@ -296,7 +281,7 @@ class KeychainManager extends JApplicationCli
 	 *
 	 * @return  string  The result of var_dump
 	 *
-	 * @since   12.3
+	 * @since   3.1.4
 	 */
 	private function dumpVar($var)
 	{
@@ -313,7 +298,7 @@ class KeychainManager extends JApplicationCli
 	 *
 	 * @return  void
 	 *
-	 * @since   12.3
+	 * @since   3.1.4
 	 */
 	protected function delete()
 	{
@@ -332,7 +317,7 @@ class KeychainManager extends JApplicationCli
 	 *
 	 * @return  void
 	 *
-	 * @since   12.3
+	 * @since   3.1.4
 	 */
 	protected function listEntries()
 	{
@@ -354,7 +339,7 @@ class KeychainManager extends JApplicationCli
 	 *
 	 * @return  void
 	 *
-	 * @since   12.3
+	 * @since   3.1.4
 	 */
 	protected function displayHelp()
 	{

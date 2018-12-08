@@ -3,17 +3,18 @@
  * @package     Joomla.Administrator
  * @subpackage  com_fields
  *
- * @copyright   Copyright (C) 2005 - 2016 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2018 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 defined('_JEXEC') or die;
 
+use Joomla\Registry\Registry;
 use Joomla\Utilities\ArrayHelper;
 
 /**
  * Groups Model
  *
- * @since  __DEPLOY_VERSION__
+ * @since  3.7.0
  */
 class FieldsModelGroups extends JModelList
 {
@@ -22,7 +23,7 @@ class FieldsModelGroups extends JModelList
 	 * when dealing with the getStoreId() method and caching data structures.
 	 *
 	 * @var    string
-	 * @since   __DEPLOY_VERSION__
+	 * @since   3.7.0
 	 */
 	protected $context = 'com_fields.groups';
 
@@ -32,7 +33,7 @@ class FieldsModelGroups extends JModelList
 	 * @param   array  $config  An optional associative array of configuration settings.
 	 *
 	 * @see     JModelLegacy
-	 * @since   __DEPLOY_VERSION__
+	 * @since   3.7.0
 	 */
 	public function __construct($config = array())
 	{
@@ -42,7 +43,6 @@ class FieldsModelGroups extends JModelList
 				'id', 'a.id',
 				'title', 'a.title',
 				'type', 'a.type',
-				'alias', 'a.alias',
 				'state', 'a.state',
 				'access', 'a.access',
 				'access_level',
@@ -72,15 +72,15 @@ class FieldsModelGroups extends JModelList
 	 *
 	 * @return  void
 	 *
-	 * @since   __DEPLOY_VERSION__
+	 * @since   3.7.0
 	 */
 	protected function populateState($ordering = null, $direction = null)
 	{
 		// List state information.
 		parent::populateState('a.ordering', 'asc');
 
-		$extension = $this->getUserStateFromRequest($this->context . '.extension', 'extension', 'com_content', 'CMD');
-		$this->setState('filter.extension', $extension);
+		$context = $this->getUserStateFromRequest($this->context . '.context', 'context', 'com_content', 'CMD');
+		$this->setState('filter.context', $context);
 	}
 
 	/**
@@ -94,13 +94,13 @@ class FieldsModelGroups extends JModelList
 	 *
 	 * @return  string  A store id.
 	 *
-	 * @since   __DEPLOY_VERSION__
+	 * @since   3.7.0
 	 */
 	protected function getStoreId($id = '')
 	{
 		// Compile the store id.
 		$id .= ':' . $this->getState('filter.search');
-		$id .= ':' . $this->getState('filter.extension');
+		$id .= ':' . $this->getState('filter.context');
 		$id .= ':' . $this->getState('filter.state');
 		$id .= ':' . print_r($this->getState('filter.language'), true);
 
@@ -112,7 +112,7 @@ class FieldsModelGroups extends JModelList
 	 *
 	 * @return  JDatabaseQuery   A JDatabaseQuery object to retrieve the data set.
 	 *
-	 * @since   __DEPLOY_VERSION__
+	 * @since   3.7.0
 	 */
 	protected function getListQuery()
 	{
@@ -122,13 +122,7 @@ class FieldsModelGroups extends JModelList
 		$user = JFactory::getUser();
 
 		// Select the required fields from the table.
-		$query->select(
-			$this->getState(
-				'list.select',
-				'a.id, a.title, a.alias, a.checked_out, a.checked_out_time, a.note' .
-				', a.state, a.access, a.created, a.created_by, a.ordering, a.language'
-			)
-		);
+		$query->select($this->getState('list.select', 'a.*'));
 		$query->from('#__fields_groups AS a');
 
 		// Join over the language
@@ -145,9 +139,9 @@ class FieldsModelGroups extends JModelList
 		$query->select('ua.name AS author_name')->join('LEFT', '#__users AS ua ON ua.id = a.created_by');
 
 		// Filter by context
-		if ($extension = $this->getState('filter.extension', 'com_fields'))
+		if ($context = $this->getState('filter.context', 'com_fields'))
 		{
-			$query->where('a.extension = ' . $db->quote($extension));
+			$query->where('a.context = ' . $db->quote($context));
 		}
 
 		// Filter by access level.
@@ -195,7 +189,7 @@ class FieldsModelGroups extends JModelList
 			else
 			{
 				$search = $db->quote('%' . str_replace(' ', '%', $db->escape(trim($search), true) . '%'));
-				$query->where('(a.title LIKE ' . $search . ' OR a.alias LIKE ' . $search . ')');
+				$query->where('a.title LIKE ' . $search);
 			}
 		}
 
@@ -219,5 +213,32 @@ class FieldsModelGroups extends JModelList
 		$query->order($db->escape($listOrdering) . ' ' . $listDirn);
 
 		return $query;
+	}
+
+	/**
+	 * Gets an array of objects from the results of database query.
+	 *
+	 * @param   string   $query       The query.
+	 * @param   integer  $limitstart  Offset.
+	 * @param   integer  $limit       The number of records.
+	 *
+	 * @return  array  An array of results.
+	 *
+	 * @since   3.8.7
+	 * @throws  RuntimeException
+	 */
+	protected function _getList($query, $limitstart = 0, $limit = 0)
+	{
+		$result = parent::_getList($query, $limitstart, $limit);
+
+		if (is_array($result))
+		{
+			foreach ($result as $group)
+			{
+				$group->params = new Registry($group->params);
+			}
+		}
+
+		return $result;
 	}
 }

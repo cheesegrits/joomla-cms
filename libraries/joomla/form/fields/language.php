@@ -3,26 +3,28 @@
  * @package     Joomla.Platform
  * @subpackage  Form
  *
- * @copyright   Copyright (C) 2005 - 2016 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2018 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE
  */
 
 defined('JPATH_PLATFORM') or die;
+
+JFormHelper::loadFieldClass('list');
 
 /**
  * Form Field class for the Joomla Platform.
  * Supports a list of installed application languages
  *
  * @see    JFormFieldContentLanguage for a select list of content languages.
- * @since  11.1
+ * @since  1.7.0
  */
-class JFormFieldLanguage extends JFormAbstractlist
+class JFormFieldLanguage extends JFormFieldList
 {
 	/**
 	 * The form field type.
 	 *
 	 * @var    string
-	 * @since  11.1
+	 * @since  1.7.0
 	 */
 	protected $type = 'Language';
 
@@ -31,7 +33,7 @@ class JFormFieldLanguage extends JFormAbstractlist
 	 *
 	 * @return  array  The field option objects.
 	 *
-	 * @since   11.1
+	 * @since   1.7.0
 	 */
 	protected function getOptions()
 	{
@@ -51,7 +53,7 @@ class JFormFieldLanguage extends JFormAbstractlist
 				$languages,
 				function ($a, $b)
 				{
-					return strcmp($a["value"], $b["value"]);
+					return strcmp($a['value'], $b['value']);
 				}
 			);
 		}

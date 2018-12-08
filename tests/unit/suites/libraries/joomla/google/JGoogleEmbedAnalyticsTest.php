@@ -2,8 +2,8 @@
 /**
  * @package    Joomla.UnitTest
  *
- * @copyright  Copyright (C) 2005 - 2016 Open Source Matters, Inc. All rights reserved.
- * @license    GNU General Public License version 2 or later; see LICENSE
+ * @copyright  Copyright (C) 2005 - 2018 Open Source Matters, Inc. All rights reserved.
+ * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 /**
@@ -11,7 +11,7 @@
  *
  * @package     Joomla.UnitTest
  * @subpackage  Google
- * @since       12.3
+ * @since       3.1.4
  */
 class JGoogleEmbedAnalyticsTest extends TestCase
 {
@@ -53,14 +53,12 @@ class JGoogleEmbedAnalyticsTest extends TestCase
 	 *
 	 * @return void
 	 *
-	 * @see     PHPUnit_Framework_TestCase::tearDown()
+	 * @see     \PHPUnit\Framework\TestCase::tearDown()
 	 * @since   3.6
 	 */
 	protected function tearDown()
 	{
-		unset($this->options);
-		unset($this->uri);
-		unset($this->object);
+		unset($this->options, $this->uri, $this->object);
 		parent::tearDown();
 	}
 

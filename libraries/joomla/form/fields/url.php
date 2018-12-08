@@ -3,7 +3,7 @@
  * @package     Joomla.Platform
  * @subpackage  Form
  *
- * @copyright   Copyright (C) 2005 - 2016 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2018 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE
  */
 
@@ -17,15 +17,15 @@ JFormHelper::loadFieldClass('text');
  *
  * @link   http://www.w3.org/TR/html-markup/input.url.html#input.url
  * @see    JFormRuleUrl for validation of full urls
- * @since  11.1
+ * @since  1.7.0
  */
-class JFormFieldUrl extends JFormFieldText implements JFormDomfieldinterface
+class JFormFieldUrl extends JFormFieldText
 {
 	/**
 	 * The form field type.
 	 *
 	 * @var    string
-	 * @since  11.1
+	 * @since  1.7.0
 	 */
 	protected $type = 'Url';
 
@@ -74,29 +74,5 @@ class JFormFieldUrl extends JFormFieldText implements JFormDomfieldinterface
 		);
 
 		return array_merge($data, $extraData);
-	}
-
-	/**
-	 * Function to manipulate the DOM element of the field. The form can be
-	 * manipulated at that point.
-	 *
-	 * @param   stdClass    $field      The field.
-	 * @param   DOMElement  $fieldNode  The field node.
-	 * @param   JForm       $form       The form.
-	 *
-	 * @return  void
-	 *
-	 * @since   __DEPLOY_VERSION__
-	 */
-	protected function postProcessDomNode($field, DOMElement $fieldNode, JForm $form)
-	{
-		$fieldNode->setAttribute('validate', 'url');
-
-		if (! $fieldNode->getAttribute('relative'))
-		{
-			$fieldNode->removeAttribute('relative');
-		}
-
-		return parent::postProcessDomNode($field, $fieldNode, $form);
 	}
 }

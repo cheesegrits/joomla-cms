@@ -3,7 +3,7 @@
  * @package     Joomla.Site
  * @subpackage  com_content
  *
- * @copyright   Copyright (C) 2005 - 2016 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2018 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -39,7 +39,7 @@ abstract class JHtmlIcon
 		// Add the button classes to the attribs array
 		if (isset($attribs['class']))
 		{
-			$attribs['class'] = $attribs['class'] . ' btn btn-primary';
+			$attribs['class'] .= ' btn btn-primary';
 		}
 		else
 		{
@@ -48,7 +48,7 @@ abstract class JHtmlIcon
 
 		$button = JHtml::_('link', JRoute::_($url), $text, $attribs);
 
-		$output = '<span class="hasTooltip" title="' . JHtml::tooltipText('COM_CONTENT_CREATE_ARTICLE') . '">' . $button . '</span>';
+		$output = '<span class="hasTooltip" title="' . JHtml::_('tooltipText', 'COM_CONTENT_CREATE_ARTICLE') . '">' . $button . '</span>';
 
 		return $output;
 	}
@@ -73,7 +73,8 @@ abstract class JHtmlIcon
 		$link     = $base . JRoute::_(ContentHelperRoute::getArticleRoute($article->slug, $article->catid, $article->language), false);
 		$url      = 'index.php?option=com_mailto&tmpl=component&template=' . $template . '&link=' . MailtoHelper::addLink($link);
 
-		$status = 'width=400,height=350,menubar=yes,resizable=yes';
+		$height = JFactory::getApplication()->get('captcha', '0') === '0' ? 450 : 550;
+		$status = 'width=400,height=' . $height . ',menubar=yes,resizable=yes';
 
 		$text = JLayoutHelper::render('joomla.content.icons.email', array('params' => $params, 'legacy' => $legacy));
 
@@ -81,9 +82,7 @@ abstract class JHtmlIcon
 		$attribs['onclick'] = "window.open(this.href,'win2','" . $status . "'); return false;";
 		$attribs['rel']     = 'nofollow';
 
-		$output = JHtml::_('link', JRoute::_($url), $text, $attribs);
-
-		return $output;
+		return JHtml::_('link', JRoute::_($url), $text, $attribs);
 	}
 
 	/**
@@ -149,7 +148,7 @@ abstract class JHtmlIcon
 		}
 
 		$date   = JHtml::_('date', $article->created);
-		$author = $article->created_by_alias ? $article->created_by_alias : $article->author;
+		$author = $article->created_by_alias ?: $article->author;
 
 		$overlib .= '&lt;br /&gt;';
 		$overlib .= $date;
@@ -176,12 +175,8 @@ abstract class JHtmlIcon
 	 */
 	public static function print_popup($article, $params, $attribs = array(), $legacy = false)
 	{
-		$app = JFactory::getApplication();
-		$input = $app->input;
-		$request = $input->request;
-
 		$url  = ContentHelperRoute::getArticleRoute($article->slug, $article->catid, $article->language);
-		$url .= '&tmpl=component&print=1&layout=default&page=' . @ $request->limitstart;
+		$url .= '&tmpl=component&print=1&layout=default';
 
 		$status = 'status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no';
 

@@ -3,16 +3,16 @@
  * @package     Joomla.UnitTest
  * @subpackage  Form
  *
- * @copyright   Copyright (C) 2005 - 2016 Open Source Matters, Inc. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE
+ * @copyright   Copyright (C) 2005 - 2018 Open Source Matters, Inc. All rights reserved.
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 /**
  * Test class for JFormRuleTel
  *
- * @since       11.1
+ * @since       1.7.0
  */
-class JFormRuleTelTest extends PHPUnit_Framework_TestCase
+class JFormRuleTelTest extends \PHPUnit\Framework\TestCase
 {
 	/**
 	 * Data provider for the failure test case on the NANP format

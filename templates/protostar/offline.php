@@ -3,7 +3,7 @@
  * @package     Joomla.Site
  * @subpackage  Templates.protostar
  *
- * @copyright   Copyright (C) 2005 - 2016 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2018 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -35,7 +35,7 @@ JHtml::_('stylesheet', 'offline.css', array('version' => 'auto', 'relative' => t
 // Use of Google Font
 if ($this->params->get('googleFont'))
 {
-	JHtml::_('stylesheet', '//fonts.googleapis.com/css?family=' . $this->params->get('googleFontName'));
+	JHtml::_('stylesheet', 'https://fonts.googleapis.com/css?family=' . $this->params->get('googleFontName'));
 	$this->addStyleDeclaration("
 	h1, h2, h3, h4, h5, h6, .site-title {
 		font-family: '" . str_replace('+', ' ', $this->params->get('googleFontName')) . "', sans-serif;
@@ -45,13 +45,13 @@ if ($this->params->get('googleFont'))
 // Template color
 if ($this->params->get('templateColor'))
 {
-	$this->addStyleDeclaration("
+	$this->addStyleDeclaration('
 	body.site {
-		border-top: 3px solid " . $this->params->get('templateColor') . ";
-		background-color: " . $this->params->get('templateBackgroundColor') . ";
+		border-top: 3px solid ' . $this->params->get('templateColor') . ';
+		background-color: ' . $this->params->get('templateBackgroundColor') . ';
 	}
 	a {
-		color: " . $this->params->get('templateColor') . ";
+		color: ' . $this->params->get('templateColor') . ';
 	}
 	.nav-list > .active > a,
 	.nav-list > .active > a:hover,
@@ -61,8 +61,8 @@ if ($this->params->get('templateColor'))
 	.nav-pills > .active > a,
 	.nav-pills > .active > a:hover,
 	.btn-primary {
-		background: " . $this->params->get('templateColor') . ";
-	}");
+		background: ' . $this->params->get('templateColor') . ';
+	}');
 }
 
 // Check for a custom CSS file
@@ -75,7 +75,7 @@ JHtml::_('script', 'user.js', array('version' => 'auto', 'relative' => true));
 JHtml::_('bootstrap.loadCss', false, $this->direction);
 
 // Logo file or site title param
-$sitename = $app->get('sitename');
+$sitename = htmlspecialchars($app->get('sitename'), ENT_QUOTES, 'UTF-8');
 
 if ($this->params->get('logoFile'))
 {
@@ -104,12 +104,12 @@ else
 				<?php if (!empty($logo)) : ?>
 					<h1><?php echo $logo; ?></h1>
 				<?php else : ?>
-					<h1><?php echo htmlspecialchars($app->get('sitename')); ?></h1>
+					<h1><?php echo $sitename; ?></h1>
 				<?php endif; ?>
 				<?php if ($app->get('offline_image') && file_exists($app->get('offline_image'))) : ?>
-					<img src="<?php echo $app->get('offline_image'); ?>" alt="<?php echo htmlspecialchars($app->get('sitename')); ?>" />
+					<img src="<?php echo $app->get('offline_image'); ?>" alt="<?php echo $sitename; ?>" />
 				<?php endif; ?>
-				<?php if ($app->get('display_offline_message', 1) == 1 && str_replace(' ', '', $app->get('offline_message')) != '') : ?>
+				<?php if ($app->get('display_offline_message', 1) == 1 && str_replace(' ', '', $app->get('offline_message')) !== '') : ?>
 					<p><?php echo $app->get('offline_message'); ?></p>
 				<?php elseif ($app->get('display_offline_message', 1) == 2) : ?>
 					<p><?php echo JText::_('JOFFLINE_MESSAGE'); ?></p>

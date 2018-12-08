@@ -3,7 +3,7 @@
  * @package     Joomla.Administrator
  * @subpackage  com_users
  *
- * @copyright   Copyright (C) 2005 - 2016 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2018 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -54,16 +54,6 @@ class UsersHelper
 				'index.php?option=com_users&view=levels',
 				$vName == 'levels'
 			);
-			JHtmlSidebar::addEntry(
-				JText::_('COM_USERS_SUBMENU_NOTES'),
-				'index.php?option=com_users&view=notes',
-				$vName == 'notes'
-			);
-			JHtmlSidebar::addEntry(
-				JText::_('COM_USERS_SUBMENU_NOTE_CATEGORIES'),
-				'index.php?option=com_categories&extension=com_users',
-				$vName == 'categories'
-			);
 		}
 
 		if (JComponentHelper::isEnabled('com_fields') && JComponentHelper::getParams('com_users')->get('custom_fields_enable', '1'))
@@ -75,10 +65,22 @@ class UsersHelper
 			);
 			JHtmlSidebar::addEntry(
 				JText::_('JGLOBAL_FIELD_GROUPS'),
-				'index.php?option=com_fields&view=groups&extension=com_users',
+				'index.php?option=com_fields&view=groups&context=com_users.user',
 				$vName == 'fields.groups'
 			);
 		}
+
+		JHtmlSidebar::addEntry(
+			JText::_('COM_USERS_SUBMENU_NOTES'),
+			'index.php?option=com_users&view=notes',
+			$vName == 'notes'
+		);
+
+		JHtmlSidebar::addEntry(
+			JText::_('COM_USERS_SUBMENU_NOTE_CATEGORIES'),
+			'index.php?option=com_categories&extension=com_users',
+			$vName == 'categories'
+		);
 	}
 
 	/**
@@ -91,12 +93,21 @@ class UsersHelper
 	public static function getActions()
 	{
 		// Log usage of deprecated function
-		JLog::add(__METHOD__ . '() is deprecated, use JHelperContent::getActions() with new arguments order instead.', JLog::WARNING, 'deprecated');
+		try
+		{
+			JLog::add(
+				sprintf('%s() is deprecated. Use JHelperContent::getActions() with new arguments order instead.', __METHOD__),
+				JLog::WARNING,
+				'deprecated'
+			);
+		}
+		catch (RuntimeException $exception)
+		{
+			// Informational log only
+		}
 
 		// Get list of actions
-		$result = JHelperContent::getActions('com_users');
-
-		return $result;
+		return JHelperContent::getActions('com_users');
 	}
 
 	/**
@@ -243,61 +254,34 @@ class UsersHelper
 	}
 
 	/**
-	 * Adds Count Items for Tag Manager.
+	 * Returns a valid section for users. If it is not valid then null
+	 * is returned.
 	 *
-	 * @param   stdClass[]  &$items     The user note tag objects
-	 * @param   string      $extension  The name of the active view.
+	 * @param   string  $section  The section to get the mapping for
 	 *
-	 * @return  stdClass[]
+	 * @return  string|null  The new section
 	 *
-	 * @since   3.6
+	 * @since   3.7.0
 	 */
-	public static function countTagItems(&$items, $extension)
+	public static function validateSection($section)
 	{
-		$db = JFactory::getDbo();
-
-		foreach ($items as $item)
+		if (JFactory::getApplication()->isClient('site'))
 		{
-			$item->count_trashed = 0;
-			$item->count_archived = 0;
-			$item->count_unpublished = 0;
-			$item->count_published = 0;
-			$query = $db->getQuery(true);
-			$query->select('published as state, count(*) AS count')
-				->from($db->qn('#__contentitem_tag_map') . 'AS ct ')
-				->where('ct.tag_id = ' . (int) $item->id)
-				->where('ct.type_alias =' . $db->q($extension))
-				->join('LEFT', $db->qn('#__categories') . ' AS c ON ct.content_item_id=c.id')
-				->group('c.published');
-
-			$db->setQuery($query);
-			$users = $db->loadObjectList();
-
-			foreach ($users as $user)
+			switch ($section)
 			{
-				if ($user->state == 1)
-				{
-					$item->count_published = $user->count;
-				}
-
-				if ($user->state == 0)
-				{
-					$item->count_unpublished = $user->count;
-				}
-
-				if ($user->state == 2)
-				{
-					$item->count_archived = $user->count;
-				}
-
-				if ($user->state == -2)
-				{
-					$item->count_trashed = $user->count;
-				}
+				case 'registration':
+				case 'profile':
+					$section = 'user';
 			}
 		}
 
-		return $items;
+		if ($section != 'user')
+		{
+			// We don't know other sections
+			return null;
+		}
+
+		return $section;
 	}
 
 	/**
@@ -305,7 +289,7 @@ class UsersHelper
 	 *
 	 * @return  array
 	 *
-	 * @since   __DEPLOY_VERSION__
+	 * @since   3.7.0
 	 */
 	public static function getContexts()
 	{

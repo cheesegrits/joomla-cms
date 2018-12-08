@@ -3,7 +3,7 @@
  * @package     Joomla.Administrator
  * @subpackage  com_media
  *
- * @copyright   Copyright (C) 2005 - 2016 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2018 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -81,14 +81,13 @@ $doc->addScriptDeclaration(
 	"
 );
 ?>
-<form target="_parent" action="index.php?option=com_media&amp;tmpl=index&amp;folder=<?php echo $this->state->folder; ?>" method="post" id="mediamanager-form" name="mediamanager-form">
+<form target="_parent" action="index.php?option=com_media&amp;tmpl=index&amp;folder=<?php echo rawurlencode($this->state->folder); ?>" method="post" id="mediamanager-form" name="mediamanager-form">
 	<div class="muted">
 		<p>
 			<span class="icon-folder"></span>
 			<?php
-				echo JText::_('JGLOBAL_ROOT'), ': ',
-					$params->get($path, 'images'),
-					($this->state->folder != '') ? '/' . $this->state->folder : '';
+				echo $params->get($path, 'images'),
+					($this->escape($this->state->folder) != '') ? '/' . $this->escape($this->state->folder) : '';
 			?>
 		</p>
 	</div>
@@ -97,6 +96,11 @@ $doc->addScriptDeclaration(
 		<table class="table table-striped table-condensed">
 		<thead>
 			<tr>
+				<?php if ($this->canDelete) : ?>
+					<th width="1%">
+						<?php echo JHtml::_('grid.checkall'); ?>
+					</th>
+				<?php endif; ?>
 				<th width="1%"><?php echo JText::_('JGLOBAL_PREVIEW'); ?></th>
 				<th><?php echo JText::_('COM_MEDIA_NAME'); ?></th>
 				<th width="15%"><?php echo JText::_('COM_MEDIA_PIXEL_DIMENSIONS'); ?></th>
@@ -105,9 +109,8 @@ $doc->addScriptDeclaration(
 				<?php if ($this->canDelete) : ?>
 					<th width="8%">
 						<?php echo JText::_('JACTION_DELETE'); ?>
-						<?php echo JHtml::_('grid.checkall'); ?>
 					</th>
-				<?php endif;?>
+				<?php endif; ?>
 			</tr>
 		</thead>
 		<tbody>

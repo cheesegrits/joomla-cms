@@ -3,11 +3,13 @@
  * @package     Joomla.Platform
  * @subpackage  Form
  *
- * @copyright   Copyright (C) 2005 - 2016 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2018 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE
  */
 
 defined('JPATH_PLATFORM') or die;
+
+JFormHelper::loadFieldClass('list');
 
 /**
  * Form Field class for the Joomla Platform.
@@ -15,15 +17,15 @@ defined('JPATH_PLATFORM') or die;
  * a given list.
  *
  * @see    JDatabaseDriver
- * @since  11.3
+ * @since  1.7.3
  */
-class JFormFieldDatabaseConnection extends JFormAbstractlist
+class JFormFieldDatabaseConnection extends JFormFieldList
 {
 	/**
 	 * The form field type.
 	 *
 	 * @var    string
-	 * @since  11.3
+	 * @since  1.7.3
 	 */
 	protected $type = 'DatabaseConnection';
 
@@ -35,7 +37,7 @@ class JFormFieldDatabaseConnection extends JFormAbstractlist
 	 *
 	 * @return  array  The field option objects.
 	 *
-	 * @since   11.3
+	 * @since   1.7.3
 	 * @see     JDatabaseDriver::getConnectors()
 	 */
 	protected function getOptions()

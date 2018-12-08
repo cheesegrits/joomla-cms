@@ -2,8 +2,8 @@
 /**
  * @package    Joomla.UnitTest
  *
- * @copyright  Copyright (C) 2005 - 2016 Open Source Matters, Inc. All rights reserved.
- * @license    GNU General Public License version 2 or later; see LICENSE
+ * @copyright  Copyright (C) 2005 - 2018 Open Source Matters, Inc. All rights reserved.
+ * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 /**
@@ -11,7 +11,7 @@
  *
  * @package     Joomla.UnitTest
  * @subpackage  Google
- * @since       12.3
+ * @since       3.1.4
  */
 class JGoogleDataPicasaTest extends TestCase
 {
@@ -69,7 +69,10 @@ class JGoogleDataPicasaTest extends TestCase
 		$_SERVER['SCRIPT_NAME'] = '/index.php';
 
 		$this->options = new JRegistry;
-		$this->http = $this->getMock('JHttp', array('head', 'get', 'delete', 'trace', 'post', 'put', 'patch'), array($this->options));
+		$this->http = $this->getMockBuilder('JHttp')
+					->setMethods(array('head', 'get', 'delete', 'trace', 'post', 'put', 'patch'))
+					->setConstructorArgs(array($this->options))
+					->getMock();
 		$this->input = new JInput;
 		$this->oauth = new JOAuth2Client($this->options, $this->http, $this->input);
 		$this->auth = new JGoogleAuthOauth2($this->options, $this->oauth);
@@ -92,19 +95,13 @@ class JGoogleDataPicasaTest extends TestCase
 	 *
 	 * @return void
 	 *
-	 * @see     PHPUnit_Framework_TestCase::tearDown()
+	 * @see     \PHPUnit\Framework\TestCase::tearDown()
 	 * @since   3.6
 	 */
 	protected function tearDown()
 	{
 		$_SERVER = $this->backupServer;
-		unset($this->backupServer);
-		unset($this->options);
-		unset($this->http);
-		unset($this->input);
-		unset($this->auth);
-		unset($this->oauth);
-		unset($this->object);
+		unset($this->backupServer, $this->options, $this->http, $this->input, $this->auth, $this->oauth, $this->object);
 		parent::tearDown();
 	}
 
@@ -141,7 +138,7 @@ class JGoogleDataPicasaTest extends TestCase
 		$this->http->expects($this->once())->method('get')->will($this->returnCallback('picasaAlbumlistCallback'));
 		$results = $this->object->listAlbums('userID');
 
-		$this->assertEquals(count($results), 2);
+		$this->assertCount(2, $results);
 		$i = 1;
 
 		foreach ($results as $result)
@@ -287,7 +284,7 @@ class JGoogleDataPicasaTest extends TestCase
  *
  * @return  JHttpResponse
  *
- * @since   12.3
+ * @since   3.1.4
  */
 function picasaAlbumCallback($url, array $headers = null, $timeout = null)
 {
@@ -295,7 +292,7 @@ function picasaAlbumCallback($url, array $headers = null, $timeout = null)
 
 	$response->code = 200;
 	$response->headers = array('Content-Type' => 'text/html');
-	$response->body = file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'album.txt');
+	$response->body = file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . 'album.txt');
 
 	return $response;
 }
@@ -310,11 +307,11 @@ function picasaAlbumCallback($url, array $headers = null, $timeout = null)
  *
  * @return  JHttpResponse
  *
- * @since   12.3
+ * @since   3.1.4
  */
 function dataPicasaAlbumCallback($url, $data, array $headers = null, $timeout = null)
 {
-	PHPUnit_Framework_TestCase::assertContains('<title>New Title</title>', $data);
+	\PHPUnit\Framework\TestCase::assertContains('<title>New Title</title>', $data);
 
 	$response = new stdClass;
 
@@ -334,7 +331,7 @@ function dataPicasaAlbumCallback($url, $data, array $headers = null, $timeout = 
  *
  * @return  JHttpResponse
  *
- * @since   12.3
+ * @since   3.1.4
  */
 function picasaAlbumlistCallback($url, array $headers = null, $timeout = null)
 {
@@ -342,7 +339,7 @@ function picasaAlbumlistCallback($url, array $headers = null, $timeout = null)
 
 	$response->code = 200;
 	$response->headers = array('Content-Type' => 'application/atom+xml');
-	$response->body = file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'albumlist.txt');
+	$response->body = file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . 'albumlist.txt');
 
 	return $response;
 }
@@ -356,7 +353,7 @@ function picasaAlbumlistCallback($url, array $headers = null, $timeout = null)
  *
  * @return  JHttpResponse
  *
- * @since   12.3
+ * @since   3.1.4
  */
 function picasaExceptionCallback($url, array $headers = null, $timeout = null)
 {
@@ -379,7 +376,7 @@ function picasaExceptionCallback($url, array $headers = null, $timeout = null)
  *
  * @return  JHttpResponse
  *
- * @since   12.3
+ * @since   3.1.4
  */
 function picasaDataExceptionCallback($url, $data, array $headers = null, $timeout = null)
 {
@@ -401,7 +398,7 @@ function picasaDataExceptionCallback($url, $data, array $headers = null, $timeou
  *
  * @return  JHttpResponse
  *
- * @since   12.3
+ * @since   3.1.4
  */
 function picasaBadXmlCallback($url, array $headers = null, $timeout = null)
 {

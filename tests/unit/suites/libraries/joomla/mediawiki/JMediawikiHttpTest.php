@@ -3,8 +3,8 @@
  * @package     Joomla.UnitTest
  * @subpackage  Client
  *
- * @copyright   Copyright (C) 2005 - 2016 Open Source Matters, Inc. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE
+ * @copyright   Copyright (C) 2005 - 2018 Open Source Matters, Inc. All rights reserved.
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 /**
@@ -13,37 +13,37 @@
  * @package     Joomla.UnitTest
  * @subpackage  Mediawiki
  *
- * @since       12.3
+ * @since       3.1.4
  */
-class JMediawikiHttpTest extends PHPUnit_Framework_TestCase
+class JMediawikiHttpTest extends \PHPUnit\Framework\TestCase
 {
 	/**
 	 * @var    JRegistry  Options for the Mediawiki object.
-	 * @since  12.3
+	 * @since  3.1.4
 	 */
 	protected $options;
 
 	/**
 	 * @var    JMediawikiHttp  Mock client object.
-	 * @since  12.3
+	 * @since  3.1.4
 	 */
 	protected $transport;
 
 	/**
 	 * @var    JMediawikiHttp  Object under test.
-	 * @since  12.3
+	 * @since  3.1.4
 	 */
 	protected $object;
 
 	/**
 	 * @var    string  Sample xml string.
-	 * @since  12.3
+	 * @since  3.1.4
 	 */
 	protected $sampleString = '<a><b></b><c></c></a>';
 
 	/**
 	 * @var    string  Sample xml error message.
-	 * @since  12.3
+	 * @since  3.1.4
 	 */
 	protected $errorString = '<message>Generic Error</message>';
 
@@ -58,7 +58,12 @@ class JMediawikiHttpTest extends PHPUnit_Framework_TestCase
 	protected function setUp()
 	{
 		$this->options = new JRegistry;
-		$this->transport = $this->getMock('JHttpTransportStream', array('request'), array($this->options), 'CustomTransport', false);
+				$this->transport = $this->getMockBuilder('JHttpTransportStream')
+				->setMethods(array('request'))
+				->setConstructorArgs(array($this->options))
+				->setMockClassName('CustomTransport')
+				->disableOriginalConstructor()
+				->getMock();
 
 		$this->object = new JMediawikiHttp($this->options, $this->transport);
 	}
@@ -69,14 +74,12 @@ class JMediawikiHttpTest extends PHPUnit_Framework_TestCase
 	 *
 	 * @return void
 	 *
-	 * @see     PHPUnit_Framework_TestCase::tearDown()
+	 * @see     \PHPUnit\Framework\TestCase::tearDown()
 	 * @since   3.6
 	 */
 	protected function tearDown()
 	{
-		unset($this->options);
-		unset($this->transport);
-		unset($this->object);
+		unset($this->options, $this->transport, $this->object);
 	}
 
 	/**

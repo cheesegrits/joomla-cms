@@ -3,7 +3,7 @@
  * @package     Joomla.UnitTest
  * @subpackage  Date
  *
- * @copyright   Copyright (C) 2005 - 2016 Open Source Matters. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2018 Open Source Matters. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -12,7 +12,7 @@
  *
  * @package     Joomla.UnitTest
  * @subpackage  Date
- * @since       11.3
+ * @since       1.7.3
  */
 class JDateTest extends TestCase
 {
@@ -27,7 +27,7 @@ class JDateTest extends TestCase
 	 * Object under test
 	 *
 	 * @var    JDate
-	 * @since  11.3
+	 * @since  1.7.3
 	 */
 	protected $object;
 
@@ -38,7 +38,7 @@ class JDateTest extends TestCase
 	 *
 	 * @return  void
 	 *
-	 * @since   11.3
+	 * @since   1.7.3
 	 */
 	protected function setUp()
 	{
@@ -54,7 +54,7 @@ class JDateTest extends TestCase
 	 *
 	 * @return  void
 	 *
-	 * @see     PHPUnit_Framework_TestCase::tearDown()
+	 * @see     \PHPUnit\Framework\TestCase::tearDown()
 	 * @since   3.6
 	 */
 	protected function tearDown()
@@ -71,7 +71,7 @@ class JDateTest extends TestCase
 	 *
 	 * @return  array
 	 *
-	 * @since   11.3
+	 * @since   1.7.3
 	 */
 	public function cases__construct()
 	{
@@ -115,7 +115,7 @@ class JDateTest extends TestCase
 	 *
 	 * @return  array
 	 *
-	 * @since   11.3
+	 * @since   1.7.3
 	 */
 	public function cases__get()
 	{
@@ -188,7 +188,7 @@ class JDateTest extends TestCase
 	 *
 	 * @return  array
 	 *
-	 * @since   11.3
+	 * @since   1.7.3
 	 */
 	public function casesFormat()
 	{
@@ -208,36 +208,36 @@ class JDateTest extends TestCase
 				false,
 				'122007 164456',
 			),
- 			'Long' => array(
- 				'D F j, Y H:i:s',
+			'Long' => array(
+				'D F j, Y H:i:s',
 				true,
- 				'Thu December 20, 2007 11:44:56',
- 			),
- 			'LongGMT' => array(
- 				'D F j, Y H:i:s',
- 				false,
- 				'Thu December 20, 2007 16:44:56',
- 			),
- 			'Long2' => array(
- 				'H:i:s D F j, Y',
- 				false,
- 				'16:44:56 Thu December 20, 2007',
- 			),
- 			'Long3' => array(
- 				'H:i:s l F j, Y',
- 				false,
- 				'16:44:56 Thursday December 20, 2007',
- 			),
- 			'Long4' => array(
- 				'H:i:s l M j, Y',
- 				false,
- 				'16:44:56 Thursday Dec 20, 2007',
- 			),
- 			'RFC822' => array(
- 				'r',
- 				false,
- 				'Thu, 20 Dec 2007 16:44:56 +0000',
- 			),
+				'Thu December 20, 2007 11:44:56',
+			),
+			'LongGMT' => array(
+				'D F j, Y H:i:s',
+				false,
+				'Thu December 20, 2007 16:44:56',
+			),
+			'Long2' => array(
+				'H:i:s D F j, Y',
+				false,
+				'16:44:56 Thu December 20, 2007',
+			),
+			'Long3' => array(
+				'H:i:s l F j, Y',
+				false,
+				'16:44:56 Thursday December 20, 2007',
+			),
+			'Long4' => array(
+				'H:i:s l M j, Y',
+				false,
+				'16:44:56 Thursday Dec 20, 2007',
+			),
+			'RFC822' => array(
+				'r',
+				false,
+				'Thu, 20 Dec 2007 16:44:56 +0000',
+			),
 		);
 	}
 
@@ -246,7 +246,7 @@ class JDateTest extends TestCase
 	 *
 	 * @return  array
 	 *
-	 * @since   11.3
+	 * @since   1.7.3
 	 */
 	public function casesGetOffsetFromGmt()
 	{
@@ -289,7 +289,7 @@ class JDateTest extends TestCase
 	 *
 	 * @return  array
 	 *
-	 * @since   11.3
+	 * @since   1.7.3
 	 */
 	public function casesSetTimezone()
 	{
@@ -326,7 +326,7 @@ class JDateTest extends TestCase
 	 *
 	 * @return  array
 	 *
-	 * @since   11.3
+	 * @since   1.7.3
 	 */
 	public function casesToISO8601()
 	{
@@ -369,7 +369,7 @@ class JDateTest extends TestCase
 	 *
 	 * @return  array
 	 *
-	 * @since   11.3
+	 * @since   1.7.3
 	 */
 	public function casesToSql()
 	{
@@ -412,7 +412,7 @@ class JDateTest extends TestCase
 	 *
 	 * @return  array
 	 *
-	 * @since   11.3
+	 * @since   1.7.3
 	 */
 	public function casesToRFC822()
 	{
@@ -455,7 +455,7 @@ class JDateTest extends TestCase
 	 *
 	 * @return  array
 	 *
-	 * @since   11.3
+	 * @since   1.7.3
 	 */
 	public function casesToString()
 	{
@@ -480,7 +480,7 @@ class JDateTest extends TestCase
 	 *
 	 * @return  array
 	 *
-	 * @since   11.3
+	 * @since   1.7.3
 	 */
 	public function casesToUnix()
 	{
@@ -523,7 +523,7 @@ class JDateTest extends TestCase
 	 * @return  void
 	 *
 	 * @dataProvider  cases__construct
-	 * @since   11.3
+	 * @since   1.7.3
 	 * @covers  JDate::__construct
 	 */
 	public function test__construct($date, $tz, $expectedTime)
@@ -535,10 +535,48 @@ class JDateTest extends TestCase
 			$this->equalTo($expectedTime)
 		);
 
- 		$this->assertThat(
- 			$jdate->format('D m/d/Y H:i', true, false),
- 			$this->equalTo($expectedTime)
- 		);
+		$this->assertThat(
+			$jdate->format('D m/d/Y H:i', true, false),
+			$this->equalTo($expectedTime)
+		);
+	}
+
+	/**
+	 * Testing the Constructor for now when not using UTC
+	 *
+	 * @return  void
+	 *
+	 * @since   3.7.1
+	 * @covers  JDate::__construct
+	 */
+	public function test__constructForNowWhenNotUsingUTC()
+	{
+		$jdate   = new JDate('now', new DateTimeZone('US/Central'));
+		$phpdate = new DateTime('now', new DateTimeZone('US/Central'));
+
+		$this->assertSame(
+			$jdate->format('D m/d/Y H:i', true),
+			$phpdate->format('D m/d/Y H:i')
+		);
+	}
+
+	/**
+	 * Testing the Constructor for now when using UTC
+	 *
+	 * @return  void
+	 *
+	 * @since   3.7.1
+	 * @covers  JDate::__construct
+	 */
+	public function test__constructForNowWhenUsingUTC()
+	{
+		$jdate   = new JDate('now', new DateTimeZone('UTC'));
+		$phpdate = new DateTime('now', new DateTimeZone('UTC'));
+
+		$this->assertSame(
+			$jdate->format('D m/d/Y H:i'),
+			$phpdate->format('D m/d/Y H:i')
+		);
 	}
 
 	/**
@@ -551,7 +589,7 @@ class JDateTest extends TestCase
 	 * @return  void
 	 *
 	 * @dataProvider  cases__get
-	 * @since   11.3
+	 * @since   1.7.3
 	 * @covers  JDate::__get
 	 */
 	public function test__get($date, $property, $expected)
@@ -569,7 +607,7 @@ class JDateTest extends TestCase
 	 *
 	 * @return  void
 	 *
-	 * @since   11.3
+	 * @since   1.7.3
 	 * @covers  JDate::__toString
 	 */
 	public function test__toString()
@@ -591,7 +629,7 @@ class JDateTest extends TestCase
 	 * @return  void
 	 *
 	 * @dataProvider casesToString
-	 * @since   11.3
+	 * @since   1.7.3
 	 * @covers  JDate::__toString
 	 */
 	public function testToString($format, $expectedTime)
@@ -609,7 +647,7 @@ class JDateTest extends TestCase
 	 *
 	 * @return  void
 	 *
-	 * @since   11.3
+	 * @since   1.7.3
 	 * @covers  JDate::getInstance
 	 */
 	public function testGetInstance()
@@ -630,7 +668,7 @@ class JDateTest extends TestCase
 	 * @return  void
 	 *
 	 * @dataProvider casesGetOffsetFromGmt
-	 * @since   11.3
+	 * @since   1.7.3
 	 * @covers  JDate::getOffsetFromGMT
 	 */
 	public function testGetOffsetFromGmt($tz, $setTime, $hours, $expected)
@@ -651,7 +689,7 @@ class JDateTest extends TestCase
 	 * @return  void
 	 *
 	 * @dataProvider casesFormat
-	 * @since   11.3
+	 * @since   1.7.3
 	 * @covers  JDate::format
 	 */
 	public function testFormat($format, $local, $expected)
@@ -670,7 +708,7 @@ class JDateTest extends TestCase
 	 * @return  void
 	 *
 	 * @dataProvider casesToRFC822
-	 * @since   11.3
+	 * @since   1.7.3
 	 * @covers  JDate::toRFC822
 	 */
 	public function testToRFC822($tz, $setTime, $local, $expected)
@@ -691,7 +729,7 @@ class JDateTest extends TestCase
 	 * @return  void
 	 *
 	 * @dataProvider casesToISO8601
-	 * @since   11.3
+	 * @since   1.7.3
 	 * @covers  JDate::toISO8601
 	 */
 	public function testToISO8601($tz, $setTime, $local, $expected)
@@ -712,7 +750,7 @@ class JDateTest extends TestCase
 	 * @return  void
 	 *
 	 * @dataProvider casesToSQL
-	 * @since   11.3
+	 * @since   1.7.3
 	 * @covers  JDate::toSql
 	 */
 	public function testToSql($tz, $setTime, $local, $expected)
@@ -732,7 +770,7 @@ class JDateTest extends TestCase
 	 * @return  void
 	 *
 	 * @dataProvider casesToUnix
-	 * @since   11.3
+	 * @since   1.7.3
 	 * @covers  JDate::toUnix
 	 */
 	public function testToUnix($tz, $setTime, $expected)
@@ -751,7 +789,7 @@ class JDateTest extends TestCase
 	 * @return  void
 	 *
 	 * @dataProvider casesSetTimezone
-	 * @since   11.3
+	 * @since   1.7.3
 	 * @covers  JDate::setTimezone
 	 */
 	public function testSetTimezone($tz, $expected)

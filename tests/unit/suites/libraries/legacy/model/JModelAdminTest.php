@@ -3,8 +3,8 @@
  * @package     Joomla.UnitTest
  * @subpackage  Model
  *
- * @copyright   Copyright (C) 2005 - 2016 Open Source Matters, Inc. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE
+ * @copyright   Copyright (C) 2005 - 2018 Open Source Matters, Inc. All rights reserved.
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 /**
@@ -13,20 +13,20 @@
  * @package     Joomla.UnitTest
  * @subpackage  Model
  *
- * @since       12.3
+ * @since       3.1.4
  */
 class JModelAdminTest extends TestCase
 {
 	/**
 	 * @var    JModelAdmin
-	 * @since  12.3
+	 * @since  3.1.4
 	 */
 	public $object;
 
 	/**
 	 * Setup each test.
 	 *
-	 * @since   12.3
+	 * @since   3.1.4
 	 *
 	 * @return  void
 	 */
@@ -42,7 +42,7 @@ class JModelAdminTest extends TestCase
 	 *
 	 * @return void
 	 *
-	 * @see     PHPUnit_Framework_TestCase::tearDown()
+	 * @see     \PHPUnit\Framework\TestCase::tearDown()
 	 * @since   3.6
 	 */
 	protected function tearDown()

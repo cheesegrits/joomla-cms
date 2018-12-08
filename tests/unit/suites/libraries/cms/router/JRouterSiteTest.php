@@ -3,8 +3,8 @@
  * @package     Joomla.UnitTest
  * @subpackage  Router
  *
- * @copyright   Copyright (C) 2005 - 2016 Open Source Matters, Inc. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE
+ * @copyright   Copyright (C) 2005 - 2018 Open Source Matters, Inc. All rights reserved.
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 require_once __DIR__ . '/data/TestRouter.php';
@@ -68,7 +68,7 @@ class JRouterSiteTest extends TestCaseDatabase
 	 *
 	 * @return  void
 	 *
-	 * @see     PHPUnit_Framework_TestCase::tearDown()
+	 * @see     \PHPUnit\Framework\TestCase::tearDown()
 	 * @since   3.2
 	 */
 	protected function tearDown()
@@ -159,7 +159,7 @@ class JRouterSiteTest extends TestCaseDatabase
 				'map'     => array(array('sef_suffix', null, '1')),
 				'server'  => $server1,
 				'expVars' => array('format' => 'json', 'option' => 'com_test3', 'Itemid' => '45'),
-				'expUrl'  => 'joomla/blog/test.json'
+				'expUrl'  => 'joomla/blog/test'
 			),
 			array(
 				'url'     => '/joomla/blog/test.json/',
@@ -167,7 +167,7 @@ class JRouterSiteTest extends TestCaseDatabase
 				'map'     => array(array('sef_suffix', null, '1')),
 				'server'  => $server1,
 				'expVars' => array('option' => 'com_test3', 'Itemid' => '45'),
-				'expUrl'  => 'joomla/blog/test.json'
+				'expUrl'  => 'joomla/blog/test'
 			),
 			array(
 				'url'     => '/joomla/blog/test%202',
@@ -249,7 +249,7 @@ class JRouterSiteTest extends TestCaseDatabase
 		$vars = $object->parse($uri);
 
 		$this->assertEquals($expectedVars, $vars);
-		$this->assertEquals($expectedUris, (string)$uri);
+		$this->assertEquals($expectedUris, (string) $uri);
 	}
 
 	/**
@@ -500,7 +500,7 @@ class JRouterSiteTest extends TestCaseDatabase
 		$object->setMode($mode);
 
 		// Check the expected values
-		$this->assertEquals($expected, (string)($object->build($url)));
+		$this->assertEquals($expected, (string) ($object->build($url)));
 	}
 
 	/**
@@ -692,8 +692,8 @@ class JRouterSiteTest extends TestCaseDatabase
 				'url'          => '?testvar=testvalue',
 				'mode'         => JROUTER_MODE_RAW,
 				'appConfig'    => array(),
-				'expParseVars' => array('Itemid' => '45', 'option' => 'com_test3', 'view' => 'test3'),
-				'expObjVars'   => array('Itemid' => '45', 'option' => 'com_test3', 'view' => 'test3')
+				'expParseVars' => array('testvar' => 'testvalue', 'Itemid' => '45', 'option' => 'com_test3', 'view' => 'test3'),
+				'expObjVars'   => array('testvar' => 'testvalue', 'Itemid' => '45', 'option' => 'com_test3', 'view' => 'test3')
 			),
 			'abs-raw-path.ext-no_qs-no_sfx' => array(
 				'url'          => '/test/path.json',
@@ -896,6 +896,7 @@ class JRouterSiteTest extends TestCaseDatabase
 				->will($this->returnValue(true));
 			unset($appConfig['languagefilter']);
 		}
+
 		$app->expects($this->any())
 			->method('get')
 			->will($this->returnValueMap($appConfig));
@@ -958,7 +959,7 @@ class JRouterSiteTest extends TestCaseDatabase
 		$buildRawRouteMethod->setAccessible(true);
 
 		$buildRawRouteMethod->invokeArgs($object, array(&$uri));
-		$this->assertEquals('index.php', (string)$uri);
+		$this->assertEquals('index.php', (string) $uri);
 	}
 
 	/**
@@ -983,7 +984,7 @@ class JRouterSiteTest extends TestCaseDatabase
 
 		$uri->setVar('option', 'com_test');
 		$buildRawRouteMethod->invokeArgs($object, array(&$uri));
-		$this->assertEquals('index.php?option=com_test&testvar=testvalue', (string)$uri);
+		$this->assertEquals('index.php?option=com_test&testvar=testvalue', (string) $uri);
 	}
 
 	/**
@@ -1009,7 +1010,7 @@ class JRouterSiteTest extends TestCaseDatabase
 		$uri->setVar('option', 'com_ te?st');
 		$uri->delVar('testvar');
 		$buildRawRouteMethod->invokeArgs($object, array(&$uri));
-		$this->assertEquals('index.php?option=com_ te?st&testvar=testvalue', (string)$uri);
+		$this->assertEquals('index.php?option=com_ te?st&testvar=testvalue', (string) $uri);
 	}
 
 	/**
@@ -1035,7 +1036,7 @@ class JRouterSiteTest extends TestCaseDatabase
 		$uri->setVar('option', 'com_test3');
 		$uri->delVar('testvar');
 		$buildRawRouteMethod->invokeArgs($object, array(&$uri));
-		$this->assertEquals('index.php?option=com_test3', (string)$uri);
+		$this->assertEquals('index.php?option=com_test3', (string) $uri);
 	}
 
 	/**
@@ -1117,7 +1118,7 @@ class JRouterSiteTest extends TestCaseDatabase
 		$buildSefRouteMethod->setAccessible(true);
 		$buildSefRouteMethod->invokeArgs($object, array(&$uri));
 
-		$this->assertEquals($expected, (string)$uri);
+		$this->assertEquals($expected, (string) $uri);
 	}
 
 	/**
@@ -1191,6 +1192,11 @@ class JRouterSiteTest extends TestCaseDatabase
 				'mode'     => JROUTER_MODE_SEF,
 				'expected' => 'test?start=42'
 			),
+			'limitstart_zero' => array(
+				'url'      => 'test?limitstart=0',
+				'mode'     => JROUTER_MODE_SEF,
+				'expected' => 'test?start=0'
+			),
 		);
 	}
 
@@ -1221,7 +1227,7 @@ class JRouterSiteTest extends TestCaseDatabase
 
 		$processBuildRulesMethod->invokeArgs($object, array(&$uri));
 
-		$this->assertEquals($expected, (string)$uri);
+		$this->assertEquals($expected, (string) $uri);
 	}
 
 	/**
@@ -1313,7 +1319,7 @@ class JRouterSiteTest extends TestCaseDatabase
 		$uri = $createUriMethod->invoke($object, $url);
 
 		$this->assertInstanceOf('JUri', $uri);
-		$this->assertEquals($expected, (string)$uri);
+		$this->assertEquals($expected, (string) $uri);
 	}
 
 	/**

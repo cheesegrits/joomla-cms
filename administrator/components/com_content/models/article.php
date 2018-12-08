@@ -3,7 +3,7 @@
  * @package     Joomla.Administrator
  * @subpackage  com_content
  *
- * @copyright   Copyright (C) 2005 - 2016 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2018 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -46,34 +46,96 @@ class ContentModelArticle extends JModelAdmin
 	protected $associationsContext = 'com_content.item';
 
 	/**
-	 * Batch copy items to a new category or current.
+	 * Function that can be overriden to do any data cleanup after batch copying data
 	 *
-	 * @param   integer  $value     The new category.
+	 * @param   \JTableInterface  $table  The table object containing the newly created item
+	 * @param   integer           $newId  The id of the new item
+	 * @param   integer           $oldId  The original item id
+	 *
+	 * @return  void
+	 *
+	 * @since  3.8.12
+	 */
+	protected function cleanupPostBatchCopy(\JTableInterface $table, $newId, $oldId)
+	{
+		// Check if the article was featured and update the #__content_frontpage table
+		if ($table->featured == 1)
+		{
+			$db = $this->getDbo();
+			$query = $db->getQuery(true)
+				->insert($db->quoteName('#__content_frontpage'))
+				->values($newId . ', 0');
+			$db->setQuery($query);
+			$db->execute();
+		}
+
+		// Register FieldsHelper
+		JLoader::register('FieldsHelper', JPATH_ADMINISTRATOR . '/components/com_fields/helpers/fields.php');
+
+		$oldItem = $this->getTable();
+		$oldItem->load($oldId);
+		$fields = FieldsHelper::getFields('com_content.article', $oldItem, true);
+
+		$fieldsData = array();
+
+		if (!empty($fields))
+		{
+			$fieldsData['com_fields'] = array();
+
+			foreach ($fields as $field)
+			{
+				$fieldsData['com_fields'][$field->name] = $field->rawvalue;
+			}
+		}
+
+		JEventDispatcher::getInstance()->trigger('onContentAfterSave', array('com_content.article', &$this->table, true, $fieldsData));
+	}
+
+	/**
+	 * Batch move categories to a new category.
+	 *
+	 * @param   integer  $value     The new category ID.
 	 * @param   array    $pks       An array of row IDs.
 	 * @param   array    $contexts  An array of item contexts.
 	 *
-	 * @return  mixed  An array of new IDs on success, boolean false on failure.
+	 * @return  boolean  True on success.
 	 *
-	 * @since   11.1
+	 * @since   3.8.6
 	 */
-	protected function batchCopy($value, $pks, $contexts)
+	protected function batchMove($value, $pks, $contexts)
 	{
-		$categoryId = (int) $value;
+		if (empty($this->batchSet))
+		{
+			// Set some needed variables.
+			$this->user = JFactory::getUser();
+			$this->table = $this->getTable();
+			$this->tableClassName = get_class($this->table);
+			$this->contentType = new JUcmType;
+			$this->type = $this->contentType->getTypeByTable($this->tableClassName);
+		}
 
-		$newIds = array();
+		$categoryId = (int) $value;
 
 		if (!$this->checkCategoryId($categoryId))
 		{
 			return false;
 		}
 
-		// Parent exists so we let's proceed
-		while (!empty($pks))
-		{
-			// Pop the first ID off the stack
-			$pk = array_shift($pks);
+		JPluginHelper::importPlugin('system');
+		$dispatcher = JEventDispatcher::getInstance();
 
-			$this->table->reset();
+		// Register FieldsHelper
+		JLoader::register('FieldsHelper', JPATH_ADMINISTRATOR . '/components/com_fields/helpers/fields.php');
+
+		// Parent exists so we proceed
+		foreach ($pks as $pk)
+		{
+			if (!$this->user->authorise('core.edit', $contexts[$pk]))
+			{
+				$this->setError(JText::_('JLIB_APPLICATION_ERROR_BATCH_CANNOT_EDIT'));
+
+				return false;
+			}
 
 			// Check that the row actually exists
 			if (!$this->table->load($pk))
@@ -93,28 +155,21 @@ class ContentModelArticle extends JModelAdmin
 				}
 			}
 
-			// Alter the title & alias
-			$data = $this->generateNewTitle($categoryId, $this->table->alias, $this->table->title);
-			$this->table->title = $data['0'];
-			$this->table->alias = $data['1'];
+			$fields = FieldsHelper::getFields('com_content.article', $this->table, true);
+			$fieldsData = array();
 
-			// Reset the ID because we are making a copy
-			$this->table->id = 0;
+			if (!empty($fields))
+			{
+				$fieldsData['com_fields'] = array();
 
-			// Reset hits because we are making a copy
-			$this->table->hits = 0;
+				foreach ($fields as $field)
+				{
+					$fieldsData['com_fields'][$field->name] = $field->rawvalue;
+				}
+			}
 
-			// Unpublish because we are making a copy
-			$this->table->state = 0;
-
-			// New category ID
+			// Set the new category ID
 			$this->table->catid = $categoryId;
-
-			// TODO: Deal with ordering?
-			// $table->ordering	= 1;
-
-			// Get the featured state
-			$featured = $this->table->featured;
 
 			// Check the row.
 			if (!$this->table->check())
@@ -124,7 +179,10 @@ class ContentModelArticle extends JModelAdmin
 				return false;
 			}
 
-			$this->createTagsHelper($this->tagsObserver, $this->type, $pk, $this->typeAlias, $this->table);
+			if (!empty($this->type))
+			{
+				$this->createTagsHelper($this->tagsObserver, $this->type, $pk, $this->typeAlias, $this->table);
+			}
 
 			// Store the row.
 			if (!$this->table->store())
@@ -134,28 +192,14 @@ class ContentModelArticle extends JModelAdmin
 				return false;
 			}
 
-			// Get the new item ID
-			$newId = $this->table->get('id');
-
-			// Add the new ID to the array
-			$newIds[$pk] = $newId;
-
-			// Check if the article was featured and update the #__content_frontpage table
-			if ($featured == 1)
-			{
-				$db = $this->getDbo();
-				$query = $db->getQuery(true)
-					->insert($db->quoteName('#__content_frontpage'))
-					->values($newId . ', 0');
-				$db->setQuery($query);
-				$db->execute();
-			}
+			// Run event for moved article
+			$dispatcher->trigger('onContentAfterSave', array('com_content.article', &$this->table, false, $fieldsData));
 		}
 
 		// Clean the cache
 		$this->cleanCache();
 
-		return $newIds;
+		return true;
 	}
 
 	/**
@@ -208,7 +252,7 @@ class ContentModelArticle extends JModelAdmin
 		}
 
 		// Default to component settings if neither article nor category known.
-		return parent::canEditState();
+		return parent::canEditState($record);
 	}
 
 	/**
@@ -387,7 +431,7 @@ class ContentModelArticle extends JModelAdmin
 		$assoc = JLanguageAssociations::isEnabled();
 
 		// Check if article is associated
-		if ($this->getState('article.id') && $app->isSite() && $assoc)
+		if ($this->getState('article.id') && $app->isClient('site') && $assoc)
 		{
 			$associations = JLanguageAssociations::getAssociations('com_content', '#__content', 'com_content.item', $id);
 
@@ -414,7 +458,7 @@ class ContentModelArticle extends JModelAdmin
 	protected function loadFormData()
 	{
 		// Check the session for previously entered form data.
-		$app = JFactory::getApplication();
+		$app  = JFactory::getApplication();
 		$data = $app->getUserState('com_content.edit.article.data', array());
 
 		if (empty($data))
@@ -449,6 +493,38 @@ class ContentModelArticle extends JModelAdmin
 		$this->preprocessData('com_content.article', $data);
 
 		return $data;
+	}
+
+	/**
+	 * Method to validate the form data.
+	 *
+	 * @param   JForm   $form   The form to validate against.
+	 * @param   array   $data   The data to validate.
+	 * @param   string  $group  The name of the field group to validate.
+	 *
+	 * @return  array|boolean  Array of filtered data if valid, false otherwise.
+	 *
+	 * @see     JFormRule
+	 * @see     JFilterInput
+	 * @since   3.7.0
+	 */
+	public function validate($form, $data, $group = null)
+	{
+		// Don't allow to change the users if not allowed to access com_users.
+		if (JFactory::getApplication()->isClient('administrator') && !JFactory::getUser()->authorise('core.manage', 'com_users'))
+		{
+			if (isset($data['created_by']))
+			{
+				unset($data['created_by']);
+			}
+
+			if (isset($data['modified_by']))
+			{
+				unset($data['modified_by']);
+			}
+		}
+
+		return parent::validate($form, $data, $group);
 	}
 
 	/**
@@ -493,7 +569,7 @@ class ContentModelArticle extends JModelAdmin
 			$catid = CategoriesHelper::validateCategoryId($data['catid'], 'com_content');
 		}
 
-		// Save New Categoryg
+		// Save New Category
 		if ($catid == 0 && $this->canCreateCategory())
 		{
 			$table = array();
@@ -652,15 +728,15 @@ class ContentModelArticle extends JModelAdmin
 					->where('content_id IN (' . implode(',', $pks) . ')');
 				$db->setQuery($query);
 
-				$old_featured = $db->loadColumn();
+				$oldFeatured = $db->loadColumn();
 
 				// We diff the arrays to get a list of the articles that are newly featured
-				$new_featured = array_diff($pks, $old_featured);
+				$newFeatured = array_diff($pks, $oldFeatured);
 
 				// Featuring.
 				$tuples = array();
 
-				foreach ($new_featured as $pk)
+				foreach ($newFeatured as $pk)
 				{
 					$tuples[] = $pk . ', 0';
 				}
@@ -735,7 +811,6 @@ class ContentModelArticle extends JModelAdmin
 				$fields->addAttribute('name', 'associations');
 				$fieldset = $fields->addChild('fieldset');
 				$fieldset->addAttribute('name', 'item_associations');
-				$fieldset->addAttribute('description', 'COM_CONTENT_ITEM_ASSOCIATIONS_FIELDSET_DESC');
 
 				foreach ($languages as $language)
 				{
@@ -749,6 +824,7 @@ class ContentModelArticle extends JModelAdmin
 					$field->addAttribute('new', 'true');
 					$field->addAttribute('edit', 'true');
 					$field->addAttribute('clear', 'true');
+					$field->addAttribute('propagate', 'true');
 				}
 
 				$form->load($addform, false);
@@ -801,5 +877,32 @@ class ContentModelArticle extends JModelAdmin
 	private function canCreateCategory()
 	{
 		return JFactory::getUser()->authorise('core.create', 'com_content');
+	}
+
+	/**
+	 * Delete #__content_frontpage items if the deleted articles was featured
+	 *
+	 * @param   object  $pks  The primary key related to the contents that was deleted.
+	 *
+	 * @return  boolean
+	 *
+	 * @since   3.7.0
+	 */
+	public function delete(&$pks)
+	{
+		$return = parent::delete($pks);
+
+		if ($return)
+		{
+			// Now check to see if this articles was featured if so delete it from the #__content_frontpage table
+			$db = $this->getDbo();
+			$query = $db->getQuery(true)
+				->delete($db->quoteName('#__content_frontpage'))
+				->where('content_id IN (' . implode(',', $pks) . ')');
+			$db->setQuery($query);
+			$db->execute();
+		}
+
+		return $return;
 	}
 }
